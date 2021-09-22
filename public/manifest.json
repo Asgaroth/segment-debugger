@@ -7,6 +7,5 @@
   "icons": { "16": "logo.png" },
 
   "devtools_page": "devtools.html",
-  "permissions": ["activeTab"],
   "manifest_version": 2
 }

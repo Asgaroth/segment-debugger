@@ -15,7 +15,6 @@ export function RequestTable() {
     });
   }
 
-  console.log(requests, selectedRequest);
   return (
     <div className="flex">
       <div className="flex-1 min-w-max">
