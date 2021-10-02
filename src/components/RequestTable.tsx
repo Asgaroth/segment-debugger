@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import { RequestEntry } from '../services/processRequest';
 import { useDispatch, useStore } from '../store';
-import { ClearButton } from './ClearButton';
 import { PropertiesTable } from './PropertiesTable';
 
 export function RequestTable() {
@@ -19,9 +18,9 @@ export function RequestTable() {
     <div className="flex">
       <div className="flex-1 min-w-max">
         <h3 className="flex items-center bg-gray-200 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          Events {requests && <ClearButton />}
+          Events
         </h3>
-        <div className="divide-y divide-gray-200">
+        <div className="divide-y divide-gray-200 bg-white">
           {requests ? (
             Object.entries<RequestEntry>(requests).map(([key, event]) => (
               <div
@@ -39,7 +38,7 @@ export function RequestTable() {
               </div>
             ))
           ) : (
-            <div className="p-4 w-full text-center">
+            <div className="p-4 w-full text-center bg-white">
               No events tracked in this tab yet!
             </div>
           )}

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer, useState } from 'react';
+import React, { useContext, useEffect, useReducer } from 'react';
 import { setupDevtools } from './services/devtools';
 import {
   isRequestValid,
@@ -6,7 +6,12 @@ import {
   RequestEntry,
 } from './services/processRequest';
 
+export type ConfigOptions = {
+  customDomain?: string;
+};
+
 type Store = {
+  config?: ConfigOptions;
   selectedRequest?: RequestEntry;
   requests: Record<string, any> | undefined;
 };
@@ -26,7 +31,10 @@ function makeEntry(request: any) {
 function storeReducer(state: Store, action: ReducerAction): Store {
   switch (action.type) {
     case 'ADD_EVENT': {
-      const request = processRequest(action.payload);
+      const request = processRequest(
+        action.payload,
+        state.config?.customDomain
+      );
       if (request) {
         const entry = makeEntry(request);
         return {
@@ -43,6 +51,12 @@ function storeReducer(state: Store, action: ReducerAction): Store {
     case 'SELECT': {
       return { ...state, selectedRequest: { ...action.payload } };
     }
+    case 'CUSTOM_DOMAIN': {
+      return {
+        ...state,
+        config: { ...state.config, customDomain: action.payload },
+      };
+    }
     default:
       console.error(action);
       throw new Error(`Unknown action type ${action.type}`);
@@ -50,19 +64,16 @@ function storeReducer(state: Store, action: ReducerAction): Store {
 }
 
 function StoreProvider({ initialState, ...props }: any) {
-  const [store, dispatch] = useReducer(storeReducer, {
-    requests: initialState,
-    // selectedRequest: initialState.first
-  });
-  // console.log(store);
+  const [store, dispatch] = useReducer(storeReducer, initialState);
+  const customDomain = store.config?.customDomain;
 
   useEffect(() => {
     setupDevtools((request) => {
-      if (isRequestValid(request)) {
+      if (isRequestValid(request, customDomain)) {
         dispatch({ type: 'ADD_EVENT', payload: request });
       }
     });
-  }, []);
+  }, [customDomain]);
   return (
     <DispatchContext.Provider value={dispatch}>
       <StoreContext.Provider value={store} {...props} />
