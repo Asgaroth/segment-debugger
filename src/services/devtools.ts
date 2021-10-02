@@ -1,8 +1,12 @@
-export function setupDevtools(
-  callback: (request: chrome.devtools.network.Request) => void
-) {
+type RequestHandler = (request: chrome.devtools.network.Request) => void;
+let lastCallback: RequestHandler;
+export function setupDevtools(callback: RequestHandler) {
   if (chrome?.devtools?.network) {
-    chrome.devtools.network.onRequestFinished.addListener(callback);
+    if (lastCallback) {
+      chrome.devtools.network.onRequestFinished.removeListener(lastCallback);
+    }
+    lastCallback = callback;
+    chrome.devtools.network.onRequestFinished.addListener(lastCallback);
   } else if (process.env.NODE_ENV === 'development') {
     const testData = require('../testdata.json');
     testData.forEach((request: any) => {
